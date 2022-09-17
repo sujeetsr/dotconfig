@@ -137,6 +137,7 @@ call plug#begin()
   Plug 'numToStr/Comment.nvim'
   Plug 'JoosepAlviste/nvim-ts-context-commentstring'
   Plug 'jose-elias-alvarez/nvim-lsp-ts-utils'
+  Plug 'lukas-reineke/indent-blankline.nvim'
 
   " File Search / navigation
   Plug 'mileszs/ack.vim'
@@ -406,6 +407,6 @@ source ~/.config/nvim/nvim-tree-config/init.vim
 
 set termguicolors
 
-colorscheme fahrenheit
+colorscheme night-owl
 set background=dark
 
