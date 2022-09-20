@@ -299,45 +299,45 @@ lua << EOF
 
   -- Uncomment to use prettier for formatting on save
   -- null_ls and prettier for formatting on save with prettier
-  --   local null_ls = require("null-ls")
-  --   local prettier = require("prettier")
-  --   
-  --   null_ls.setup({
-  --     on_attach = function(client, bufnr)
-  --       if client.resolved_capabilities.document_formatting then
-  --         vim.cmd("nnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.formatting()<CR>")
-  --         vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()")
-  --       end
-  --   
-  --       if client.resolved_capabilities.document_range_formatting then
-  --         vim.cmd("xnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.range_formatting({})<CR>")
-  --       end
-  --     end,
-  --   })
-  --   
-  --   prettier.setup({
-  --     bin = 'prettierd', -- or `prettierd`
-  --     filetypes = {
-  --       "css",
-  --       "graphql",
-  --       "html",
-  --       "javascript",
-  --       "javascriptreact",
-  --       "json",
-  --       "less",
-  --       "markdown",
-  --       "scss",
-  --       "typescript",
-  --       "typescriptreact",
-  --       "yaml",
-  --     },
-  --   })
-  --
+  local null_ls = require("null-ls")
+  local prettier = require("prettier")
+
+  null_ls.setup({
+    on_attach = function(client, bufnr)
+      if client.resolved_capabilities.document_formatting then
+        vim.cmd("nnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.formatting()<CR>")
+        vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()")
+      end
+
+      if client.resolved_capabilities.document_range_formatting then
+        vim.cmd("xnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.range_formatting({})<CR>")
+      end
+    end,
+  })
+
+  prettier.setup({
+    bin = 'prettierd', -- or `prettierd`
+    filetypes = {
+      "css",
+      "graphql",
+      "html",
+      "javascript",
+      "javascriptreact",
+      "json",
+      "less",
+      "markdown",
+      "scss",
+      "typescript",
+      "typescriptreact",
+      "yaml",
+      },
+  })
+
 
 
   -- Eslint and formatting on save
-  require'lspconfig'.eslint.setup{}
-  vim.cmd("autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll")
+  -- require'lspconfig'.eslint.setup{}
+  -- vim.cmd("autocmd BufWritePre *.tsx,*.ts,*.jsx,*.js EslintFixAll")
   -- -----------
 
   local cmp = require('cmp')
@@ -361,6 +361,8 @@ lua << EOF
         i = cmp.mapping.abort(),
         c = cmp.mapping.close(),
       }),
+      ['<C-n>'] = cmp.mapping(cmp.mapping.select_next_item(), {'i','c'}),
+      ['<C-p>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i','c'}),
       -- Accept currently selected item. If none selected, `select` first item.
       -- Set `select` to `false` to only confirm explicitly selected items.
       ['<CR>'] = cmp.mapping.confirm({ select = true }),
@@ -400,6 +402,10 @@ lua << EOF
 
   require('Comment').setup()
   require('gitsigns').setup()
+
+  -- lspsage setup 
+  local saga = require('lspsaga')
+  saga.init_lsp_saga()
 
 EOF
 
