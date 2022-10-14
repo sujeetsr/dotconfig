@@ -24,6 +24,9 @@ set nohlsearch
 set ignorecase
 set number
 set signcolumn=yes
+set relativenumber
+set scrolloff=8
+set updatetime=300
 
 " Edit another file in the same directory as the current file
 " uses expression to extract path from current file's path (vim.org tip #2)
@@ -132,12 +135,12 @@ call plug#begin()
   Plug 'adelarsq/vim-matchit' 
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-repeat'
-  Plug 'Raimondi/delimitMate'
   Plug 'bkad/camelcasemotion'
   Plug 'numToStr/Comment.nvim'
   Plug 'JoosepAlviste/nvim-ts-context-commentstring'
   Plug 'jose-elias-alvarez/nvim-lsp-ts-utils'
   Plug 'lukas-reineke/indent-blankline.nvim'
+  Plug 'windwp/nvim-autopairs'
 
   " File Search / navigation
   Plug 'mileszs/ack.vim'
@@ -282,9 +285,10 @@ lua << EOF
     buf_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
     buf_set_keymap('n', '<space>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
     buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-    
-    client.resolved_capabilities.document_formatting = false
-    client.resolved_capabilities.document_range_formatting = false
+   
+    -- If using null_ls for formatting then set other clients formatting capabilities to false
+    client.server_capabilities.documentFormattingProvider = false
+    client.server_capabilities.documentRangeFormattingProvider = false
  
     local ts_utils = require("nvim-lsp-ts-utils")
     ts_utils.setup({
@@ -304,12 +308,12 @@ lua << EOF
 
   null_ls.setup({
     on_attach = function(client, bufnr)
-      if client.resolved_capabilities.document_formatting then
+      if client.server_capabilities.documentFormattingProvider then
         vim.cmd("nnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.formatting()<CR>")
         vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()")
       end
 
-      if client.resolved_capabilities.document_range_formatting then
+      if client.server_capabilities.documentRangeFormattingProvider then
         vim.cmd("xnoremap <silent><buffer> <Leader>f :lua vim.lsp.buf.range_formatting({})<CR>")
       end
     end,
@@ -389,7 +393,15 @@ lua << EOF
       { name = 'cmdline' }
     })
   })
-  
+
+  -- Autopairs
+  require("nvim-autopairs").setup {}
+  local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+  cmp.event:on(
+    'confirm_done',
+    cmp_autopairs.on_confirm_done()
+    )
+
   local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
   
   nvim_lsp.tsserver.setup {
@@ -403,7 +415,7 @@ lua << EOF
   require('Comment').setup()
   require('gitsigns').setup()
 
-  -- lspsage setup 
+  -- lspsaga setup 
   local saga = require('lspsaga')
   saga.init_lsp_saga()
 
